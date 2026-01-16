@@ -16,13 +16,13 @@ public class TestController {
     private ChatClient chatClient;
 
 
-    @GetMapping("/chat")
+    @GetMapping(value = "/chat")
     public String chat(@RequestParam String prompt) {
         return chatClient.prompt(prompt).call().content();
     }
 
 
-    @GetMapping(value = "/stream")
+    @GetMapping(value = "/stream", produces = "text/event-stream;charset=UTF-8")
     public Flux<String> stream(@RequestParam String prompt) {
         return chatClient.prompt(prompt).stream().content();
     }

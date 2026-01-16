@@ -9,8 +9,8 @@ import org.springframework.context.annotation.Configuration;
 public class AiConfig {
 
     @Bean
-    public ChatClient chatClient(ChatModel chatModel) {
-        return ChatClient.builder(chatModel)
+    public ChatClient chatClient(ChatClient.Builder builder) {
+        return builder
                 .defaultSystem("你是AI助手，名字叫LaGoGo")
                 .build();
     }

@@ -5,14 +5,11 @@ spring:
     active: @profile.active@
   ai:
     openai:
-      api-key: sk-n699lX98LgcWB9kS2f9h8h7k7Bo9UuJhBBCyvFGLQF1u8FVa
-#      api-key: sk-abc746abac1f4125b6bea2712430302e
-      base-url: https://api.fe8.cn
-#      base-url: https://api.deepseek.com
+      api-key: ${OPENAI_API_KEY}
+      base-url: ${OPENAI_BASE_URL}
       chat:
         options:
-#          model: deepseek-chat
-          model: gpt-4o
+          model: ${OPENAI_MODEL}
 
 
 
