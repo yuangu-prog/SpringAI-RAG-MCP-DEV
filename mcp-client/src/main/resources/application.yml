@@ -4,15 +4,73 @@ spring:
   profiles:
     active: @profile.active@
   ai:
+    # 重试配置：避免对配置错误（HTTP 500）进行无意义重试
+    retry:
+      max-attempts: 2           # 最多重试次数（包括首次尝试）
+      #      backoff-delay: 1000ms     # 初始延迟 1 秒
+      #      exponential-backoff: true # 启用指数退避
+      on-http-codes: 502,503,504  # 只对临时性服务器错误（502, 503, 504）进行重试
+      on-client-errors: false   # 不对客户端错误（4xx）进行重试
     openai:
       api-key: ${OPENAI_API_KEY}
       base-url: ${OPENAI_BASE_URL}
       chat:
         options:
           model: ${OPENAI_MODEL}
-
-
+    vectorstore:
+      redis:
+        # 索引名称
+        index-name: yuangu-vectorstore
+        #  Redis 键的前缀
+        prefix: 'embedding:'
+        #  是否初始化所需的模式
+        #  注意：如果设置为 true，启动时会调用 embeddings API 获取维度
+        #  如果 API 配置错误（如 404），会导致启动失败
+        #  建议：如果 API 配置不确定，先设置为 false，待配置正确后再改为 true
+        initialize-schema: true
+    mcp:
+      client:
+        enabled: true
+        name: spring-ai-mcp-client
+        type: ASYNC
+        sse:
+          connections:
+            server1:
+              url: https://mcp.amap.com
+              sse-endpoint: /sse?key=45bd4b54a1e8c92d28488efccda864fd
+#            server2:
+#              url: http://localhost:9060
+#              sse-endpoint: /sse
+        stdio:
+          servers-configuration: classpath:mcp-server.json
+  data:
+    redis:
+      host: 14.103.163.15
+      port: 6379
+      # 如果 Redis 需要密码，取消下面的注释并设置密码
+      # password: ${REDIS_PASSWORD:}
+      # 数据库索引（默认 0）
+      #      database: 0
+      # 连接超时时间（毫秒）
+      #      timeout: 5000
+      #      jedis:
+      #        pool:
+      #          enabled: true
+      # Lettuce 连接池配置
+#      lettuce:
+#        pool:
+#          # 最大连接数
+#          max-active: 8
+#          # 最大阻塞等待时间（毫秒，负值表示没有限制）
+#          max-wait: -1
+#          # 最大空闲连接
+#          max-idle: 8
+#          # 最小空闲连接
+#          min-idle: 0
 
 logging:
   level:
     root: info
+    org.springframework.ai: debug
+    org.springframework.data.redis: debug
+    com.yuangu.ai.client: debug

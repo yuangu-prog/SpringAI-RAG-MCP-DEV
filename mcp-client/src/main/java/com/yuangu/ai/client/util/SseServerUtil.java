@@ -58,25 +58,36 @@ public class SseServerUtil {
      *
      * @param uid     用户 ID
      * @param message 消息内容
-     * @return 是否发送成功
+     * @param type    消息类型
      */
     public static void sendMessage(String uid, String message, SseMessageType type) {
-
-        if (CLIENTS.isEmpty()) {
+        if (uid == null || type == null) {
+            log.warn("发送消息参数不完整: uid={}, type={}", uid, type);
             return;
         }
 
-        CLIENTS.get(uid).ifPresent(sseEmitter -> {
+        Optional<SseEmitter> emitterOpt = CLIENTS.get(uid);
+        if (emitterOpt == null || !emitterOpt.isPresent()) {
+            log.warn("用户 {} 的 SSE 连接不存在", uid);
+            return;
+        }
+
+        emitterOpt.ifPresent(sseEmitter -> {
             try {
-                sseEmitter.send(SseEmitter.event()
-                        .data(message)
-                        .name(type.getCode()));
+                SseEmitter.SseEventBuilder eventBuilder = SseEmitter.event()
+                        .data(message != null ? message : "")
+                        .name(type.getCode());
+
+                sseEmitter.send(eventBuilder);
+                log.debug("成功向用户 {} 发送 {} 类型消息", uid, type.getCode());
             } catch (IOException e) {
                 log.error("向用户 {} 发送消息失败", uid, e);
                 removeUid(uid);
+            } catch (Exception e) {
+                log.error("向用户 {} 发送消息时发生异常", uid, e);
+                removeUid(uid);
             }
         });
-
     }
 
 
@@ -87,14 +98,22 @@ public class SseServerUtil {
 
     public static void sendEndMessage(String uid) {
         // 发送完成标记
-        SseServerUtil.getEmitter(uid).ifPresent(sseEmitter -> {
-            try {
-                sseEmitter.send(SseEmitter.event()
-                        .data("[DONE]")
-                        .name(SseMessageType.DONE.getCode()));
-            } catch (IOException e) {
-                // 忽略关闭错误
-            }
-        });
+        Optional<SseEmitter> emitterOpt = getEmitter(uid);
+        if (emitterOpt != null && emitterOpt.isPresent()) {
+            emitterOpt.ifPresent(sseEmitter -> {
+                try {
+                    sseEmitter.send(SseEmitter.event()
+                            .data("[DONE]")
+                            .name(SseMessageType.DONE.getCode()));
+                    log.debug("向用户 {} 发送完成标记", uid);
+                    removeUid(uid);
+                } catch (IOException e) {
+                    log.debug("发送完成标记时连接已关闭: {}", e.getMessage());
+                    // 忽略关闭错误
+                } catch (Exception e) {
+                    log.warn("发送完成标记时发生异常", e);
+                }
+            });
+        }
     }
 }

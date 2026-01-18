@@ -1,2 +1,9 @@
 server:
   port: 8081
+
+
+internet:
+  search:
+    searxng:
+      url: http://14.103.163.15:6080/
+      top-k: 25
