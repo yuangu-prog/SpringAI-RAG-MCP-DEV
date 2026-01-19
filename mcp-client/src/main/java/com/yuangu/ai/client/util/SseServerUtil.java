@@ -2,6 +2,7 @@ package com.yuangu.ai.client.util;
 
 import com.yuangu.ai.client.enums.SseMessageType;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
 import java.io.IOException;
@@ -74,9 +75,7 @@ public class SseServerUtil {
 
         emitterOpt.ifPresent(sseEmitter -> {
             try {
-                SseEmitter.SseEventBuilder eventBuilder = SseEmitter.event()
-                        .data(message != null ? message : "")
-                        .name(type.getCode());
+                SseEmitter.SseEventBuilder eventBuilder = SseEmitter.event().data(message != null ? message : "").name(type.getCode());
 
                 sseEmitter.send(eventBuilder);
                 log.debug("成功向用户 {} 发送 {} 类型消息", uid, type.getCode());
@@ -88,6 +87,22 @@ public class SseServerUtil {
                 removeUid(uid);
             }
         });
+    }
+
+    public static void sendMessage(SseEmitter sseEmitter, String uid, String message, SseMessageType type) {
+
+        try {
+            SseEmitter.SseEventBuilder eventBuilder = SseEmitter.event().data(message != null ? message : StringUtils.EMPTY).name(type.getCode());
+
+            sseEmitter.send(eventBuilder);
+            log.debug("成功向用户 {} 发送 {} 类型消息", uid, type.getCode());
+        } catch (IOException e) {
+            log.error("向用户 {} 发送消息失败", uid, e);
+            removeUid(uid);
+        } catch (Exception e) {
+            log.error("向用户 {} 发送消息时发生异常", uid, e);
+            removeUid(uid);
+        }
     }
 
 
@@ -102,9 +117,7 @@ public class SseServerUtil {
         if (emitterOpt != null && emitterOpt.isPresent()) {
             emitterOpt.ifPresent(sseEmitter -> {
                 try {
-                    sseEmitter.send(SseEmitter.event()
-                            .data("[DONE]")
-                            .name(SseMessageType.DONE.getCode()));
+                    sseEmitter.send(SseEmitter.event().data("[DONE]").name(SseMessageType.DONE.getCode()));
                     log.debug("向用户 {} 发送完成标记", uid);
                     removeUid(uid);
                 } catch (IOException e) {

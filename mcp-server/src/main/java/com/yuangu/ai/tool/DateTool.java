@@ -8,6 +8,12 @@ import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * DateTool
+ *
+ * @author ckliu
+ * @since 2026-01-19 16:52:05
+ */
 @Slf4j
 @Component
 public class DateTool {
@@ -17,10 +23,10 @@ public class DateTool {
      * 并在调用这个工具时传入两个值
      *
      * @param cityName 城市名称
-     * @param zoneId   时区Id
+     * @param zoneId   时区 ID
      * @return 当前时间
      */
-    @Tool(description = "根据城市所在的时区id来获取当前时间")
+    @Tool(description = "根据城市所在的时区 ID 来获取当前时间")
     public String getCurrentTime(String cityName, String zoneId) {
         log.info("========调用MCP工具：getCurrentTime()========");
         log.info("========参数 cityName = {}", cityName);

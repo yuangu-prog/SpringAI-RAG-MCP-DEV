@@ -11,6 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
+/**
+ * SearxngController
+ *
+ * @author ckliu
+ * @since 2026-01-19 16:56:14
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/searxng")

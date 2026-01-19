@@ -19,17 +19,6 @@ public class AiConfig {
                 .build();
     }
 
-    // @Bean
-    // public OpenAiEmbeddingModel openAiEmbeddingModel(){
-    //
-    //     OpenAiApi openAiApi = OpenAiApi.builder()
-    //             .apiKey("sk-abc746abac1f4125b6bea2712430302e")
-    //             .baseUrl("https://api.deepseek.com")
-    //             .embeddingsPath("/v1/embedding")
-    //             .build();
-    //     return new OpenAiEmbeddingModel(openAiApi);
-    // }
-
     /**
      * 验证 OpenAI API 配置
      * 在应用启动时检查配置，提供清晰的错误提示

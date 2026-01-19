@@ -20,4 +20,14 @@ public class GetChatRequest {
 
     @NotBlank(message = "用户输入不能为空.")
     private String userInput;
+
+    /**
+     * 是否选中联网搜索
+     */
+    private Boolean choseSearch = Boolean.FALSE;
+
+    /**
+     * 是否选中知识库搜索
+     */
+    private Boolean choseKnowledge = Boolean.FALSE;
 }
