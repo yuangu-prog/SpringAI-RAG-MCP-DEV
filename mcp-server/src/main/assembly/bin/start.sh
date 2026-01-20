@@ -31,8 +31,13 @@ JAVA_OPT="-server -Xms${JVM_XMS} -Xmx${JVM_XMX} -Xss${JVM_XSS} \
 -XX:HeapDumpPath=${BASE_PATH}/logs/heapdump.hprof \
 -Dfile.encoding=UTF-8"
 
-# 创建日志目录
-mkdir -p "${BASE_PATH}/logs/"
+# 创建日志目录（使用绝对路径并确保创建成功）
+LOGS_DIR="${BASE_PATH}/logs"
+mkdir -p "${LOGS_DIR}"
+if [ $? -ne 0 ]; then
+    echo "错误：无法创建日志目录 ${LOGS_DIR}"
+    exit 1
+fi
 
 # 检查日志配置文件
 LOG_CONFIG="${BASE_PATH}/config/logback-spring.xml"
@@ -46,18 +51,28 @@ fi
 
 # 启动应用
 echo "正在启动 ${APPLICATION}..."
-echo "启动命令: nohup java ${JAVA_OPT} -jar \"${JAR_FILE}\" ${LOGGING_OPT} > \"${BASE_PATH}/logs/startup.log\" 2>&1 &"
 
-nohup java ${JAVA_OPT} -jar \"${JAR_FILE}\" ${LOGGING_OPT} > \"${BASE_PATH}/logs/startup.log\" 2>&1 &
+# 使用简化的命令格式，避免引号嵌套问题
+CMD="nohup java ${JAVA_OPT} -jar ${JAR_FILE} ${LOGGING_OPT} > ${LOGS_DIR}/startup.log 2>&1 &"
+echo "启动命令: $CMD"
+
+eval $CMD
 
 # 检查进程是否启动成功
 sleep 3
 PID=$(pgrep -f "java.*$(basename "$JAR_FILE")")
 if [ -n "$PID" ]; then
     echo "启动成功！PID: $PID"
-    echo "日志文件: ${BASE_PATH}/logs/startup.log"
+    echo "日志文件: ${LOGS_DIR}/startup.log"
 else
-    echo "启动失败，请检查日志: ${BASE_PATH}/logs/startup.log"
-    tail -50 "${BASE_PATH}/logs/startup.log"
+    echo "启动失败，请检查日志: ${LOGS_DIR}/startup.log"
+    if [ -f "${LOGS_DIR}/startup.log" ]; then
+        tail -50 "${LOGS_DIR}/startup.log"
+    else
+        echo "未找到启动日志文件"
+        echo "检查目录权限:"
+        ls -la "${BASE_PATH}/"
+        ls -la "${BASE_PATH}/logs/" 2>/dev/null || echo "logs目录不存在"
+    fi
     exit 1
 fi
