@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<assembly>
+    <id>application</id>
+    <includeBaseDirectory>true</includeBaseDirectory>
+    <!-- 最终打包成一个用于发布的tar.gz文件 -->
+    <formats>
+        <format>tar.gz</format>
+    </formats>
+    <fileSets>
+        <fileSet>
+            <directory>${project.build.directory}/classes</directory>
+            <includes>
+                <include>*.*</include>
+                <include>config/**</include>
+                <include>prompt/**</include>
+                <include>mapper/**</include>
+                <include>spring/**</include>
+                <include>static/**</include>
+                <include>templates/**</include>
+                <include>file/**</include>
+            </includes>
+            <outputDirectory>config</outputDirectory>
+        </fileSet>
+        <fileSet>
+            <directory>${project.basedir}/src/main/assembly/bin</directory>
+            <outputDirectory>bin</outputDirectory>
+            <filtered>true</filtered>
+            <fileMode>0777</fileMode>
+            <includes>
+                <include>*.sh</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>${project.build.directory}</directory>
+            <outputDirectory>./</outputDirectory>
+            <includes>
+                <include>${project.build.finalName}.jar</include>
+            </includes>
+        </fileSet>
+    </fileSets>
+
+</assembly>
