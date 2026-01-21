@@ -22,3 +22,12 @@ spring:
             class: javax.net.ssl.SSLSocketFactory
           ssl:
             enable: true
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    type: com.zaxxer.hikari.HikariDataSource
+    url: jdbc:mysql://14.103.163.15:3306/springai-rag-mcp-dev?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: 'R*@:/a3~TOE(*OJu@N6Njb(>%BY6v5&d'
+    hikari:
+      connection-timeout: 60000
+      maximum-pool-size: 5
