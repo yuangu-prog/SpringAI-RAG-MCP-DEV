@@ -30,18 +30,18 @@ public class ChatController {
     private final ChatClient chatClient;
     private final IChatService chatService;
 
-    @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<String> chat(@Validated @RequestBody GetChatRequest request) {
-        log.info("收到聊天请求，uid: {}, message: {}", request.getUid(), request.getUserInput());
-        SseEmitter emitter = SseServerUtil.connection(request.getUid());
-        return chatClient.prompt(request.getUserInput()).stream().content();
-    }
-
     // @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    // public SseEmitter chat(@Validated @RequestBody GetChatRequest request) {
+    // public Flux<String> chat(@Validated @RequestBody GetChatRequest request) {
     //     log.info("收到聊天请求，uid: {}, message: {}", request.getUid(), request.getUserInput());
     //     SseEmitter emitter = SseServerUtil.connection(request.getUid());
-    //     chatService.chat(request, emitter);
-    //     return emitter;
+    //     return chatClient.prompt(request.getUserInput()).stream().content();
     // }
+
+    @PostMapping(value = "/sse", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
+    public SseEmitter chat(@Validated @RequestBody GetChatRequest request) {
+        log.info("收到聊天请求，uid: {}, message: {}", request.getUid(), request.getUserInput());
+        SseEmitter emitter = SseServerUtil.connection(request.getUid());
+        chatService.chat(request, emitter);
+        return emitter;
+    }
 }

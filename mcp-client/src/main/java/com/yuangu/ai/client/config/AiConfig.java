@@ -3,6 +3,8 @@ package com.yuangu.ai.client.config;
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.ai.chat.client.ChatClient;
+import org.springframework.ai.chat.client.advisor.MessageChatMemoryAdvisor;
+import org.springframework.ai.chat.memory.ChatMemory;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -12,9 +14,12 @@ import org.springframework.context.annotation.Configuration;
 public class AiConfig {
 
     @Bean
-    public ChatClient chatClient(ChatClient.Builder builder, ToolCallbackProvider toolCallbackProvider) {
+    public ChatClient chatClient(ChatClient.Builder builder, ToolCallbackProvider toolCallbackProvider, ChatMemory chatMemory) {
         return builder
+                // 大模型function call 能力
                 .defaultToolCallbacks(toolCallbackProvider)
+                // Agent记忆功能
+                .defaultAdvisors(MessageChatMemoryAdvisor.builder(chatMemory).build())
                 .defaultSystem("你是AI助手，名字叫LaGoGo")
                 .build();
     }

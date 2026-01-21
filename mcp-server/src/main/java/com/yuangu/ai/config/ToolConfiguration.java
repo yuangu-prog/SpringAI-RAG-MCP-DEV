@@ -1,6 +1,7 @@
 package com.yuangu.ai.config;
 
 import com.yuangu.ai.tool.DateTool;
+import com.yuangu.ai.tool.EmailTool;
 import org.springframework.ai.tool.ToolCallbackProvider;
 import org.springframework.ai.tool.method.MethodToolCallbackProvider;
 import org.springframework.context.annotation.Bean;
@@ -16,9 +17,9 @@ public class ToolConfiguration {
      * @return
      */
     @Bean
-    public ToolCallbackProvider toolCallbackProvider(DateTool dateTool) {
+    public ToolCallbackProvider toolCallbackProvider(DateTool dateTool, EmailTool emailTool) {
         return MethodToolCallbackProvider.builder()
-                .toolObjects(dateTool)
+                .toolObjects(dateTool, emailTool)
                 .build();
 
     }
